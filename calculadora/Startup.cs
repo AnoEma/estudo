@@ -1,3 +1,5 @@
+using Calculadora.Repository;
+using Calculadora.Repository.Implementations;
 using Estudo.Service;
 using Estudo.Service.Implementations;
 using Microsoft.AspNetCore.Builder;
@@ -27,6 +29,7 @@ namespace Estudo
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Calculadora", Version = "v1" });
             });
             services.AddScoped<IPersonService, PersonServiceImplementation>();
+            services.AddScoped<IPersonRepository, PersonRepositoryImplementation>();
 
             services.AddApiVersioning();
         }
