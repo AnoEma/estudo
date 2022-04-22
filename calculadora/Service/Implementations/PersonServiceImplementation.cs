@@ -55,7 +55,7 @@ namespace Estudo.Service.Implementations
                 FirstName = "Arnoboys " + i,
                 LastName = "Emangi " + i,
                 Address = "Rua Cores Vivas - São Paulo - Brasil " + i,
-                Gender = "Male " + i
+                Gender = "Male" 
             };
         }
 
