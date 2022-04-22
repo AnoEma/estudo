@@ -27,6 +27,8 @@ namespace Estudo
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Calculadora", Version = "v1" });
             });
             services.AddScoped<IPersonService, PersonServiceImplementation>();
+
+            services.AddApiVersioning();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
