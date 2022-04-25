@@ -1,9 +1,11 @@
+using Calculadora.DTO;
 using Calculadora.Repository;
 using Calculadora.Repository.Implementations;
 using Estudo.Service;
 using Estudo.Service.Implementations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -39,8 +41,8 @@ namespace Estudo
 
             services.AddControllers();
 
-            var connection = Configuration.GetConnectionString("XUXA");
-            //  services.AddDbContext<MySQLContext>(options => options.UseMySql(connection));
+            var connection = Configuration["XUXA:XUXANDO"];
+            services.AddDbContext<MySQLContext>(options => options.UseMySql(connection));
 
             if (Environment.IsDevelopment())
             {
@@ -83,12 +85,12 @@ namespace Estudo
         {
             try
             {
-                //var evolveConnection = new MySql.Data.MySqlClient.MySQLConnection(connection);
-                //var evolve = new Evolve.Evolve(evolveConnection, msg => Log.Information(msg))
-                //{
-                //    Locations = new List<string> { "db/migrations", "db/dataset" },
-                //    IsEraseDisabled = true
-                //};
+                var evolveConnection = new MySql.Data.MySqlClient.MySqlConnection(connection);
+                var evolve = new Evolve.Evolve(evolveConnection, msg => Log.Information(msg))
+                {
+                    Locations = new List<string> { "db/migrations", "db/dataset" },
+                    IsEraseDisabled = true
+                };
             }
             catch (Exception ex)
             {
