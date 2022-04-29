@@ -44,10 +44,10 @@ namespace Estudo
             var connection = Configuration["XUXA:XUXANDO"];
             services.AddDbContext<MySQLContext>(options => options.UseMySql(connection));
 
-            if (Environment.IsDevelopment())
-            {
-                MigrateDatabase(connection);
-            }
+            //if (Environment.IsDevelopment())
+            //{
+            //    MigrateDatabase(connection);
+            //}
 
             services.AddSwaggerGen(c =>
             {

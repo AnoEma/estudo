@@ -1,14 +1,14 @@
-﻿using Estudo.Model;
+﻿using Calculadora.Data.VO;
 using System.Collections.Generic;
 
 namespace Estudo.Service
 {
     public interface IPersonService
-    { 
-        Person Create(Person person);
-        Person FindById(long id);
-        List<Person> FindAll();
-        Person Update(Person person);
+    {
+        PersonVO Create(PersonVO person);
+        PersonVO FindById(long id);
+        List<PersonVO> FindAll();
+        PersonVO Update(PersonVO person);
         void Delete(long id);
     }
 }

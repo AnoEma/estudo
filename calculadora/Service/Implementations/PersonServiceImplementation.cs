@@ -1,5 +1,6 @@
-﻿using Calculadora.Repository;
-using Estudo.Model;
+﻿using Calculadora.Data.Converter.Implementation;
+using Calculadora.Data.VO;
+using Calculadora.Repository;
 using System.Collections.Generic;
 
 namespace Estudo.Service.Implementations
@@ -7,14 +8,21 @@ namespace Estudo.Service.Implementations
     public class PersonServiceImplementation : IPersonService
     {
         private readonly IPersonRepository _repository;
-        public PersonServiceImplementation(IPersonRepository repository)
+        private readonly PersonConverter  _converter;
+        public PersonServiceImplementation
+        (
+            IPersonRepository repository
+        )
         {
             _repository = repository;
+            _converter = new PersonConverter();
         }
 
-        public Person Create(Person person)
+        public PersonVO Create(PersonVO person)
         {
-            return _repository.Create(person);
+            var personVO = _converter.Parse(person);
+            personVO = _repository.Create(personVO);
+            return _converter.Parse(personVO);
         }
 
         public void Delete(long id)
@@ -22,19 +30,21 @@ namespace Estudo.Service.Implementations
            _repository.Delete(id);
         }
 
-        public List<Person> FindAll()
+        public List<PersonVO> FindAll()
         {
-            return _repository.FindAll();
+            return _converter.Parse(_repository.FindAll());
         }
 
-        public Person FindById(long id)
+        public PersonVO FindById(long id)
         {
-            return _repository.FindById(id);
+            return _converter.Parse(_repository.FindById(id));
         }
 
-        public Person Update(Person person)
+        public PersonVO Update(PersonVO person)
         {
-            return _repository.Update(person);
+            var personVO = _converter.Parse(person);
+            personVO = _repository.Update(personVO);
+            return _converter.Parse(personVO);
         }
     }
 }
