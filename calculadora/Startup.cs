@@ -1,4 +1,6 @@
 using Calculadora.DTO;
+using Calculadora.Hypermedia.Enricher;
+using Calculadora.Hypermedia.Filers;
 using Calculadora.Repository;
 using Calculadora.Repository.Implementations;
 using Estudo.Service;
@@ -59,6 +61,11 @@ namespace Estudo
 
             }).AddXmlSerializerFormatters();
 
+            var filterOptions = new HyperMediaFilterOptions();
+            filterOptions.ContentResponseEnricherList.Add(new PersonEnricher());
+
+            services.AddSingleton(filterOptions);
+
 
             services.AddSwaggerGen(c =>
             {
@@ -89,6 +96,7 @@ namespace Estudo
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapControllerRoute("DefaultApi", "{controller=values}/{id?}");
             });
         }
 

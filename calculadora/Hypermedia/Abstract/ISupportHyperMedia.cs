@@ -4,6 +4,6 @@ namespace Calculadora.Hypermedia.Abstract
 {
     public interface ISupportHyperMedia
     {
-        List<HyperMediaLink> Links { get;set }
+        List<HyperMediaLink> Links { get; set; }
     }
 }
