@@ -41,7 +41,12 @@ namespace Estudo
 
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddCors(options => options.AddDefaultPolicy(builder =>
+            {
+                builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+            }));
             services.AddControllers();
 
             var connection = Configuration["XUXA:XUXANDO"];
@@ -90,6 +95,7 @@ namespace Estudo
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseCors();
 
             app.UseAuthorization();
 

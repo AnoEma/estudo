@@ -3,6 +3,7 @@ using Calculadora.Hypermedia.Filers;
 using Estudo.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace Estudo.Controllers
 {
@@ -26,6 +27,8 @@ namespace Estudo.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType((200), Type = typeof(List<PersonVO>))]
+        [ProducesResponseType((400))]
         [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Get()
         {
