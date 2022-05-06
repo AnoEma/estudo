@@ -1,21 +1,31 @@
+using Calculadora.Configurations;
+using Calculadora.ConfigurationService;
+using Calculadora.ConfigurationService.Implementations;
 using Calculadora.DTO;
 using Calculadora.Hypermedia.Enricher;
 using Calculadora.Hypermedia.Filers;
 using Calculadora.Repository;
 using Calculadora.Repository.Implementations;
+using Calculadora.Service;
+using Calculadora.Service.Implementations;
 using Estudo.Service;
 using Estudo.Service.Implementations;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Estudo
 {
@@ -41,6 +51,42 @@ namespace Estudo
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var tokenConfig = new TokenConfiguration();
+
+            new ConfigureFromConfigurationOptions<TokenConfiguration>
+                (
+                Configuration.GetSection("TokenConfiguration")
+                ).Configure(tokenConfig);
+
+            services.AddSingleton(tokenConfig);
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = tokenConfig.Isssuer,
+                    ValidAudience = tokenConfig.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenConfig.Secret))
+                };
+            });
+
+            services.AddAuthorization(auth =>
+            {
+                auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser().Build());
+            });
+
+
             services.AddCors(options => options.AddDefaultPolicy(builder =>
             {
                 builder.AllowAnyOrigin()
@@ -49,8 +95,9 @@ namespace Estudo
             }));
             services.AddControllers();
 
-            var connection = Configuration["XUXA:XUXANDO"];
-            services.AddDbContext<MySQLContext>(options => options.UseMySql(connection));
+            var connection = Configuration.GetConnectionString("Connection");
+
+            services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connection));
 
             //if (Environment.IsDevelopment())
             //{
@@ -78,6 +125,12 @@ namespace Estudo
             });
             services.AddScoped<IPersonService, PersonServiceImplementation>();
             services.AddScoped<IPersonRepository, PersonRepositoryImplementation>();
+            services.AddScoped<ILoginService, LoginServiceImpletation>();
+            services.AddScoped<IUserRepository, UserRepositoryImplementation>();
+            //  services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
+
+            services.AddTransient<ITokenService, TokenService>();
+
 
             services.AddApiVersioning();
         }

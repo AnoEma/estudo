@@ -63,6 +63,5 @@ namespace Calculadora.Repository.Implementations
         {
             return Interlocked.Increment(ref count);
         }
-
     }
 }
