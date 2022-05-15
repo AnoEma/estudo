@@ -15,6 +15,7 @@ namespace Calculadora.Repository.Implementations
         {
             _context = context;
         }
+
         public User ValidateCredentials(UserVO user)
         {
             var pass = ComputeHash(user.Password, new SHA256CryptoServiceProvider());
@@ -22,6 +23,20 @@ namespace Calculadora.Repository.Implementations
                             .Users
                             .FirstOrDefault(u => (u.UserName == user.UserName) && (u.Password == pass));
             return result;
+        }
+        public User ValidateCredentials(string username)
+        {
+            return _context.Users.SingleOrDefault(u => u.UserName == username);
+        }
+        public bool RevokeToken(string username)
+        {
+           var user = _context.Users.FirstOrDefault(u => u.UserName == username);
+            if (user != null) return false;
+
+            user.RefreshToken = null;
+            _context.SaveChanges();
+
+            return true;
         }
 
         public User RefreshUserInfo(User user)
@@ -53,6 +68,6 @@ namespace Calculadora.Repository.Implementations
             byte[] hashedBytes = algorithm.ComputeHash(inputBytes);
 
             return BitConverter.ToString(hashedBytes);
-        }
+        }  
     }
 }

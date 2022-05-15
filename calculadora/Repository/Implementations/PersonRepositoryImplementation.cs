@@ -47,6 +47,22 @@ namespace Calculadora.Repository.Implementations
             return person;
         }
 
+        public Person Disable(long id)
+        {
+            if (id > 0)
+            {
+                return new Person
+                {
+                    Id = id,
+                    FirstName = "Arnoboys",
+                    LastName = "Emangi",
+                    Address = "Rua Cores Vivas - São Paulo - Brasil",
+                    Gender = "Male"
+                };
+            }
+            return null;
+        }
+
         private Person MockPerson(int i)
         {
             return new Person

@@ -10,7 +10,7 @@ namespace Estudo.Controllers
 {
     [ApiVersion("1")]
     [ApiController]
-    [Authorize("Bearer")]
+   // [Authorize("Bearer")]
     [Route("api/[controller]/v{version:apiVersion}")]
     public class PersonController : ControllerBase
     {
@@ -42,7 +42,7 @@ namespace Estudo.Controllers
         public IActionResult Get(long id)
         {
             var person = _service.FindById(id);
-            if(person == null)
+            if (person == null)
                 return NotFound();
             return Ok(person);
         }
@@ -70,6 +70,16 @@ namespace Estudo.Controllers
         {
             _service.Delete(id);
             return NoContent();
+        }
+
+        [HttpPatch("{id}")]
+        [TypeFilter(typeof(HyperMediaFilter))]
+        public IActionResult Patch(long id)
+        {
+            var person = _service.Disable(id);
+            if (person == null)
+                return NotFound();
+            return Ok(person);
         }
     }
 }

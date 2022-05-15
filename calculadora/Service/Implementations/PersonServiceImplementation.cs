@@ -30,6 +30,11 @@ namespace Estudo.Service.Implementations
            _repository.Delete(id);
         }
 
+        public PersonVO Disable(long id)
+        {
+            return _converter.Parse(_repository.Disable(id));
+        }
+
         public List<PersonVO> FindAll()
         {
             return _converter.Parse(_repository.FindAll());

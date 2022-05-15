@@ -41,6 +41,13 @@ namespace Calculadora.Hypermedia.Enricher
                 Rel = RelationType.self,
                 Type = "int"
             });
+            content.Links.Add(new HyperMediaLink()
+            {
+                Action = HttpActionVerb.PATCH,
+                Herf = link,
+                Rel = RelationType.self,
+                Type = ResponseTypeFormat.DefaultPatch
+            });
 
             return null;
         }

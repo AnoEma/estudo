@@ -1,5 +1,6 @@
 ﻿using Calculadora.Data.VO;
 using Calculadora.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Calculadora.Controllers
@@ -17,7 +18,7 @@ namespace Calculadora.Controllers
         }
 
         [HttpPost]
-        [Route("")]
+        [Route("signin")]
         public IActionResult Signin([FromBody] UserVO user)
         {
             if (user == null) return BadRequest("Invalid client request");
@@ -26,6 +27,32 @@ namespace Calculadora.Controllers
             if (token == null) return Unauthorized();
 
             return Ok(token);
+        }
+
+        [HttpPost]
+        [Route("refresh")]
+        public IActionResult Refresh([FromBody] TokenVO tokenVO)
+        {
+
+            if (tokenVO == null) return BadRequest("Invalid client request");
+
+            var token = _service.ValidateCredentials(tokenVO);
+            if (token == null) return BadRequest("Invalid client request");
+
+            return Ok(token);
+        }
+
+        [HttpGet]
+        [Route("revoke")]
+        [Authorize("Bearer")]
+        public IActionResult Revoke()
+        {
+            var username = User.Identity.Name;
+            var result = _service.RevokeToken(username);
+
+            if (!result) return BadRequest("Invalid client request");
+
+            return NoContent();
         }
     }
 }

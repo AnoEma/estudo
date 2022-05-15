@@ -10,5 +10,6 @@ namespace Calculadora.Repository
         List<Person> FindAll();
         Person Update(Person person);
         void Delete(long id);
+        Person Disable(long id);
     }
 }

@@ -37,12 +37,42 @@ namespace Calculadora.Service.Implementations
             var accessToken = _service.GenerateAccessToken(claims);
             var refreshToken = _service.GenerateRefreshToken();
 
+            return Save(user, accessToken, refreshToken);
+        }
+       
+        public TokenVO ValidateCredentials(TokenVO token)
+        {
+            var accessToken = token.AccessToken;
+            var refreshToken = token.RefreshToken;
+
+            var principal = _service.GetPrincipalFromExpiredToken(accessToken);
+
+            var username = principal.Identity.Name;
+
+            var user = _repository.ValidateCredentials(username);
+
+            if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTipe <= DateTime.Now)
+                return null;
+
+            accessToken = _service.GenerateAccessToken(principal.Claims);
+            refreshToken = _service.GenerateRefreshToken();
+
+            return Save(user, accessToken, refreshToken);
+        }
+
+        public bool RevokeToken(string username)
+        {
+            return _repository.RevokeToken(username);
+        }
+
+        private TokenVO Save(Model.User user, string accessToken, string refreshToken)
+        {
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTipe = DateTime.Now.AddMinutes(_config.Minutes);
             _repository.RefreshUserInfo(user);
 
             DateTime createDate = DateTime.Now;
             DateTime expirationDate = createDate.AddMinutes(_config.Minutes);
-
-
 
             return new TokenVO
                 (
