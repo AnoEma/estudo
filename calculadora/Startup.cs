@@ -14,9 +14,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -97,7 +99,7 @@ namespace Estudo
 
             var connection = Configuration.GetConnectionString("Connection");
 
-            services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connection));
+            services.AddDbContext<DatabaseContext>(options => options.UseMySql(connection));
 
             //if (Environment.IsDevelopment())
             //{
@@ -123,10 +125,15 @@ namespace Estudo
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Calculadora", Version = "v1" });
             });
+
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
             services.AddScoped<IPersonService, PersonServiceImplementation>();
             services.AddScoped<IPersonRepository, PersonRepositoryImplementation>();
             services.AddScoped<ILoginService, LoginServiceImpletation>();
             services.AddScoped<IUserRepository, UserRepositoryImplementation>();
+            services.AddScoped<IFileService, FileService>();
+
             //  services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
 
             services.AddTransient<ITokenService, TokenService>();
